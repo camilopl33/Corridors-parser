@@ -19,11 +19,12 @@ const convertCSVtoJSON = async (csvFilePath) => {
 
         return {
           name: item["Name"],
+          Name: item["Name"],
           SpotType: item["SpotType"],
           spot_type_id: SPOT_TYPES[item["SpotType"]],
           geometry,
           // @ts-ignore
-          poligons: geometry?.coordinates[0],
+          polygon: geometry?.coordinates[0],
           state: item["State"],
           municipality: item["Municipio"],
         };
