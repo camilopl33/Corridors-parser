@@ -9,6 +9,23 @@ const SPOT_TYPES = {
   Terreno: 15,
 };
 
+function capitalizeWords(phrase) {
+  var words = phrase.split(" ");
+  var capitalizedWords = words.map(function (word) {
+    // If the word is within parentheses, keep it in uppercase
+    if (word.startsWith("(") && word.endsWith(")")) {
+      return word.toUpperCase();
+    }
+    // If the word is a Roman numeral, keep it in uppercase
+    if (/^[IVXLCDM]+$/i.test(word)) {
+      return word.toUpperCase();
+    }
+    // Capitalize the first letter and convert the rest to lowercase
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+  return capitalizedWords.join(" ");
+}
+
 const convertCSVtoJSON = async (csvFilePath) => {
   try {
     const dataArray = await csvtojson().fromFile(csvFilePath);
@@ -18,15 +35,14 @@ const convertCSVtoJSON = async (csvFilePath) => {
         const geometry = WKT.parse(item.geometry);
 
         return {
-          name: item["Name"],
-          Name: item["Name"],
-          SpotType: item["SpotType"],
-          spot_type_id: SPOT_TYPES[item["SpotType"]],
           geometry,
+          state: capitalizeWords(item["Estado"]),
+          spotType: item["SpotType"],
+          municipality: capitalizeWords(item["Municipio"]),
+          name: capitalizeWords(item["Name"]),
+          spot_type_id: SPOT_TYPES[item["SpotType"]],
           // @ts-ignore
           polygon: geometry?.coordinates[0],
-          state: item["State"],
-          municipality: item["Municipio"],
         };
       } catch (error) {
         console.error("Error parsing WKT to GeoJSON:", error);
